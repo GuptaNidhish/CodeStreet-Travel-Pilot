@@ -1,5 +1,6 @@
 // ============================================
 // JWT Auth Middleware
+// Supports Authorization header AND ?token= query parameter (for EventSource SSE)
 // ============================================
 
 import { Request, Response, NextFunction } from 'express';
@@ -11,7 +12,7 @@ export interface AuthRequest extends Request {
   userRole?: string;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'travelpilot-dev-secret-change-in-prod';
+const JWT_SECRET = process.env.JWT_SECRET || 'travelpilot-secret-key-code-street-2026';
 
 export function generateToken(userId: string, role: string): string {
   return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
@@ -23,12 +24,19 @@ export function verifyToken(token: string): { userId: string; role: string } {
 
 export async function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
   try {
+    let token: string | undefined;
+
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, error: 'Missing authorization header' });
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    } else if (req.query && typeof req.query.token === 'string') {
+      token = req.query.token;
     }
 
-    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ success: false, error: 'Missing authorization token' });
+    }
+
     const decoded = verifyToken(token);
 
     const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
@@ -39,7 +47,7 @@ export async function requireAuth(req: AuthRequest, res: Response, next: NextFun
     req.userId = decoded.userId;
     req.userRole = decoded.role;
     next();
-  } catch {
+  } catch (error) {
     return res.status(401).json({ success: false, error: 'Invalid or expired token' });
   }
 }

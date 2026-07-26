@@ -24,6 +24,11 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
   const json = await res.json();
 
   if (!res.ok || !json.success) {
+    if (res.status === 401 && typeof window !== 'undefined') {
+      if (!window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login';
+      }
+    }
     throw new Error(json.error || json.message || 'API Request failed');
   }
 

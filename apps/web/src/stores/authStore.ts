@@ -1,5 +1,5 @@
 // ============================================
-// Zustand Auth Store
+// Zustand Auth Store — with Zero-Friction Demo Auto-Login
 // ============================================
 
 import { create } from 'zustand';
@@ -21,27 +21,40 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: true,
 
   setAuth: (user, token) => {
-    localStorage.setItem('token', token);
+    if (typeof window !== 'undefined') localStorage.setItem('token', token);
     set({ user, token, isLoading: false });
   },
 
   logout: () => {
-    localStorage.removeItem('token');
+    if (typeof window !== 'undefined') localStorage.removeItem('token');
     set({ user: null, token: null, isLoading: false });
   },
 
   checkAuth: async () => {
-    const token = localStorage.getItem('token');
+    let token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+    // Auto demo login if no token is stored yet (for zero-friction demo experience)
     if (!token) {
-      set({ user: null, token: null, isLoading: false });
-      return;
+      try {
+        const res = await fetchApi<any>('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ email: 'alex@travelpilot.demo', password: 'demo123' }),
+        });
+        token = res.token;
+        if (typeof window !== 'undefined') localStorage.setItem('token', token!);
+        set({ user: res.user, token: res.token, isLoading: false });
+        return;
+      } catch (err) {
+        set({ user: null, token: null, isLoading: false });
+        return;
+      }
     }
 
     try {
       const user = await fetchApi<User>('/auth/me');
       set({ user, token, isLoading: false });
     } catch (err) {
-      localStorage.removeItem('token');
+      if (typeof window !== 'undefined') localStorage.removeItem('token');
       set({ user: null, token: null, isLoading: false });
     }
   },

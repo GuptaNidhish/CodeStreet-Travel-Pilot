@@ -9,10 +9,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/a
 
 export function useSSE(onEvent: (event: SSEEvent) => void) {
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    // Use EventSource (passing token in query param or headers via polyfill if needed)
     const eventSource = new EventSource(`${API_BASE_URL}/events/stream?token=${token}`);
 
     eventSource.onmessage = (e) => {
@@ -20,12 +20,11 @@ export function useSSE(onEvent: (event: SSEEvent) => void) {
         const parsed: SSEEvent = JSON.parse(e.data);
         onEvent(parsed);
       } catch (err) {
-        console.error('Failed to parse SSE event:', err);
+        // Silent parse guard
       }
     };
 
-    eventSource.onerror = (err) => {
-      console.warn('SSE connection error:', err);
+    eventSource.onerror = () => {
       eventSource.close();
     };
 

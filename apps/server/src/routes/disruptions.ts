@@ -26,7 +26,7 @@ disruptionRouter.post('/simulate', async (req: AuthRequest, res: Response) => {
     });
     if (!trip) return res.status(404).json({ success: false, error: 'Trip not found' });
 
-    const segment = trip.segments.find(s => s.id === segmentId);
+    const segment = trip.segments.find((s: any) => s.id === segmentId);
     if (!segment) return res.status(404).json({ success: false, error: 'Segment not found' });
 
     const disruption = await prisma.disruptionEvent.create({

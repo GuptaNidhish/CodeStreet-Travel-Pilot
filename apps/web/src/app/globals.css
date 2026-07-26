@@ -2,64 +2,144 @@
 
 @layer base {
   :root {
-    --background: 222.2 84% 4.9%;
+    --background: 224 71% 4%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 6.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 6.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --amex-blue: #006FCF;
+    --amex-dark-blue: #002663;
+    --centurion-gold: #C5A059;
+    --platinum-silver: #E2E8F0;
   }
 
   body {
-    background-color: #0b0f19;
-    color: #f3f4f6;
+    background-color: #060810;
+    color: #f1f5f9;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    overflow-x: hidden;
   }
 }
 
+/* American Express Neo-Brutalism Design System */
+
+.brutalist-card {
+  background-color: #0d1322;
+  border: 2px solid #1e293b;
+  box-shadow: 4px 4px 0px 0px #000000;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.brutalist-card:hover {
+  border-color: #006FCF;
+  box-shadow: 6px 6px 0px 0px #006FCF;
+}
+
+.brutalist-card-amex {
+  background-color: #0c1829;
+  border: 2px solid #006FCF;
+  box-shadow: 5px 5px 0px 0px #002663;
+}
+
+.brutalist-card-gold {
+  background-color: #141009;
+  border: 2px solid #C5A059;
+  box-shadow: 5px 5px 0px 0px #5c4720;
+}
+
+.brutalist-card-emerald {
+  background-color: #061912;
+  border: 2px solid #00E676;
+  box-shadow: 5px 5px 0px 0px #004d27;
+}
+
+.brutalist-card-rose {
+  background-color: #1a0a0e;
+  border: 2px solid #FF1744;
+  box-shadow: 5px 5px 0px 0px #660012;
+}
+
+/* Brutalist Buttons */
+.brutalist-btn {
+  background-color: #1e293b;
+  color: #ffffff;
+  border: 2px solid #334155;
+  box-shadow: 3px 3px 0px 0px #000000;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.1s ease;
+}
+.brutalist-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px #006FCF;
+  border-color: #006FCF;
+}
+.brutalist-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #000000;
+}
+
+.brutalist-btn-amex {
+  background-color: #006FCF;
+  color: #ffffff;
+  border: 2px solid #002663;
+  box-shadow: 4px 4px 0px 0px #000000;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.1s ease;
+}
+.brutalist-btn-amex:hover {
+  background-color: #0056b3;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #C5A059;
+}
+.brutalist-btn-amex:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #000000;
+}
+
+.brutalist-btn-gold {
+  background-color: #C5A059;
+  color: #000000;
+  border: 2px solid #5c4720;
+  box-shadow: 4px 4px 0px 0px #000000;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.brutalist-btn-gold:hover {
+  background-color: #d4af66;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #006FCF;
+}
+
+/* Scrolling Live Ticker */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker 35s linear infinite;
+}
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Badge & Monospace styles */
+.brutalist-badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 800;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid currentColor;
+  text-transform: uppercase;
+}
+
+/* Glass panel fallback */
 .glass-panel {
-  background: rgba(17, 24, 39, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-card {
-  background: rgba(30, 41, 59, 0.5);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.gradient-text {
-  background: linear-gradient(135deg, #60a5fa 0%, #a855f7 50%, #ec4899 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.gradient-border {
-  position: relative;
-  background-clip: padding-box;
-  border: 1px solid transparent;
-}
-.gradient-border::before {
-  content: '';
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
-  z-index: -1;
-  margin: -1px;
-  border-radius: inherit;
-  background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+  background: #0d1322;
+  border: 2px solid #1e293b;
+  box-shadow: 4px 4px 0px 0px #000000;
 }

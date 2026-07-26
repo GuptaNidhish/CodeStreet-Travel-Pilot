@@ -23,17 +23,17 @@ export default function AgentTracePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-gray-100 flex flex-col">
+    <div className="min-h-screen bg-[#060810] text-slate-100 flex flex-col font-mono">
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 md:p-8 space-y-6 max-w-6xl mx-auto w-full">
-          <div>
-            <h1 className="text-2xl font-black text-white flex items-center gap-2">
-              <Cpu className="w-6 h-6 text-purple-400" /> Multi-Agent Execution Pipeline
+        <main className="flex-1 p-4 md:p-8 space-y-6 max-w-6xl mx-auto w-full">
+          <div className="border-b-2 border-slate-800 pb-4">
+            <h1 className="text-xl md:text-2xl font-black text-white uppercase flex items-center gap-2">
+              <Cpu className="w-6 h-6 text-[#006FCF]" /> MULTI-AGENT EXECUTION PIPELINE
             </h1>
-            <p className="text-xs text-gray-400 mt-1">
-              Live graph visualization of the 10 LangGraph state agents processing flight disruptions
+            <p className="text-xs text-slate-400 font-bold uppercase mt-1">
+              Live graph visualizer of the 10 LangGraph state agents processing flight disruptions in zero-touch mode
             </p>
           </div>
 

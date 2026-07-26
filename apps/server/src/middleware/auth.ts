@@ -15,7 +15,7 @@ export interface AuthRequest extends Request {
 const JWT_SECRET = process.env.JWT_SECRET || 'travelpilot-secret-key-code-street-2026';
 
 export function generateToken(userId: string, role: string): string {
-  return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+  return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: '7d' });
 }
 
 export function verifyToken(token: string): { userId: string; role: string } {

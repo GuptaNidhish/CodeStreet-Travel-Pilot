@@ -25,7 +25,7 @@ dashboardRouter.get('/manager', requireRole('MANAGER'), async (_req: AuthRequest
       prisma.trip.groupBy({ by: ['status'], _count: { status: true } }),
     ]);
 
-    const totalSavingsUSD = allDecisions.reduce((sum, d) => sum + Math.max(0, -d.fareDelta), 0);
+    const totalSavingsUSD = allDecisions.reduce((sum: number, d: { fareDelta: number }) => sum + Math.max(0, -d.fareDelta), 0);
 
     return res.json({
       success: true,
@@ -36,7 +36,7 @@ dashboardRouter.get('/manager', requireRole('MANAGER'), async (_req: AuthRequest
         avgResolutionTimeMs: 4500,
         riskScoreDistribution: [{ score: 10, count: 5 }, { score: 30, count: 12 }, { score: 50, count: 8 }, { score: 70, count: 6 }, { score: 90, count: 3 }],
         recentActivity: recentAudit,
-        tripsByStatus: tripsByStatus.map(t => ({ status: t.status, count: t._count.status })),
+        tripsByStatus: tripsByStatus.map((t: { status: any; _count: { status: number } }) => ({ status: t.status, count: t._count.status })),
         carbonSavedKg: 245,
       },
     });

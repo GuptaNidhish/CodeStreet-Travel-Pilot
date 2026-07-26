@@ -1,6 +1,6 @@
 'use client';
 
-import { MapPin, AlertTriangle, ShieldCheck, Info } from 'lucide-react';
+import { MapPin, ShieldCheck, AlertTriangle } from 'lucide-react';
 
 interface MapProps {
   airports?: { code: string; name: string; status: string; riskScore: number }[];
@@ -16,19 +16,19 @@ export function FlightRiskMap({ airports = [] }: MapProps) {
   ];
 
   return (
-    <div className="p-5 rounded-2xl glass-panel border border-indigo-500/20 space-y-4">
+    <div className="p-5 brutalist-card space-y-4 font-mono">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-bold text-white flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-indigo-400" />
-          Global Flight Disruption Heatmap
+        <h3 className="text-xs font-black text-white uppercase flex items-center gap-2 tracking-wide">
+          <MapPin className="w-4 h-4 text-[#006FCF]" />
+          GLOBAL DISRUPTION HEATMAP
         </h3>
-        <span className="text-xs text-gray-400">Live Airport Operational Risk</span>
+        <span className="text-[10px] text-slate-400 font-bold uppercase">LIVE RISK SENSORS</span>
       </div>
 
       {/* Styled Interactive Map Canvas Mock */}
-      <div className="relative w-full h-64 rounded-xl bg-slate-950/80 border border-gray-800 overflow-hidden flex items-center justify-center">
+      <div className="relative w-full h-64 bg-[#04060b] border-2 border-slate-800 overflow-hidden flex items-center justify-center">
         {/* Decorative Grid Lines */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-40" />
 
         {/* Airport Pins */}
         {defaultAirports.map((ap) => {
@@ -43,15 +43,15 @@ export function FlightRiskMap({ airports = [] }: MapProps) {
             >
               <div className="relative flex items-center justify-center">
                 {isHighRisk && (
-                  <span className="absolute w-8 h-8 rounded-full bg-rose-500/40 animate-ping" />
+                  <span className="absolute w-8 h-8 rounded-full bg-[#FF1744]/40 animate-ping" />
                 )}
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono font-bold text-white shadow-lg border ${
+                  className={`w-7 h-7 flex items-center justify-center text-[10px] font-black font-mono text-white shadow-[2px_2px_0px_0px_#000] border-2 ${
                     isHighRisk
-                      ? 'bg-rose-600 border-rose-400'
+                      ? 'bg-[#FF1744] border-black'
                       : isMedRisk
-                      ? 'bg-amber-600 border-amber-400'
-                      : 'bg-emerald-600 border-emerald-400'
+                      ? 'bg-[#C5A059] text-black border-black'
+                      : 'bg-[#00E676] text-black border-black'
                   }`}
                 >
                   {ap.code}
@@ -59,12 +59,12 @@ export function FlightRiskMap({ airports = [] }: MapProps) {
               </div>
 
               {/* Tooltip */}
-              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-40 p-2 rounded-xl glass-panel border border-gray-700 text-[11px] text-white z-20 shadow-2xl pointer-events-none">
-                <div className="font-bold flex items-center justify-between">
+              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-44 p-2 bg-[#080c14] border-2 border-[#006FCF] shadow-[3px_3px_0px_0px_#000] text-[10px] text-white z-30 pointer-events-none font-mono">
+                <div className="font-black flex items-center justify-between uppercase">
                   <span>{ap.name}</span>
-                  <span className={isHighRisk ? 'text-rose-400' : 'text-emerald-400'}>{ap.riskScore}%</span>
+                  <span className={isHighRisk ? 'text-[#FF1744]' : 'text-[#00E676]'}>{ap.riskScore}%</span>
                 </div>
-                <div className="text-[10px] text-gray-400 mt-0.5">Status: {ap.status}</div>
+                <div className="text-[9px] text-slate-400 mt-1 uppercase font-bold">STATUS: {ap.status}</div>
               </div>
             </div>
           );

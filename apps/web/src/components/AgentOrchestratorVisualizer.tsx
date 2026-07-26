@@ -22,16 +22,16 @@ interface AgentTrace {
 }
 
 const AGENTS_LIST = [
-  { id: 'MONITOR', name: 'Monitor Agent', icon: Eye, color: 'from-blue-500 to-cyan-500' },
-  { id: 'RISK_SCORING', name: 'Risk Scoring Agent', icon: Activity, color: 'from-amber-500 to-orange-500' },
-  { id: 'PLANNER', name: 'Planner Agent (LLM)', icon: Cpu, color: 'from-purple-500 to-indigo-500' },
-  { id: 'POLICY_GUARD', name: 'Policy Guard (Determ.)', icon: ShieldCheck, color: 'from-emerald-500 to-teal-500' },
-  { id: 'EXECUTION', name: 'Execution Agent', icon: CheckSquare, color: 'from-blue-600 to-indigo-600' },
-  { id: 'HOTEL', name: 'Hotel Agent', icon: Building, color: 'from-pink-500 to-rose-500' },
-  { id: 'GROUND_TRANSPORT', name: 'Ground Transport Agent', icon: Car, color: 'from-amber-600 to-yellow-500' },
-  { id: 'BUDGET', name: 'Budget Agent', icon: DollarSign, color: 'from-emerald-600 to-green-500' },
-  { id: 'NOTIFICATION', name: 'Notification Agent', icon: Send, color: 'from-cyan-500 to-blue-500' },
-  { id: 'EXPLAINABILITY', name: 'Explainability Agent', icon: FileText, color: 'from-purple-600 to-pink-600' },
+  { id: 'MONITOR', name: '1. Monitor Agent', icon: Eye, badgeColor: 'bg-[#006FCF]' },
+  { id: 'RISK_SCORING', name: '2. Risk Scoring Agent', icon: Activity, badgeColor: 'bg-[#C5A059]' },
+  { id: 'PLANNER', name: '3. Planner Agent (LLM)', icon: Cpu, badgeColor: 'bg-[#7c3aed]' },
+  { id: 'POLICY_GUARD', name: '4. Policy Guard', icon: ShieldCheck, badgeColor: 'bg-[#00E676]' },
+  { id: 'EXECUTION', name: '5. Execution Agent', icon: CheckSquare, badgeColor: 'bg-[#006FCF]' },
+  { id: 'HOTEL', name: '6. Hotel Agent', icon: Building, badgeColor: 'bg-[#e11d48]' },
+  { id: 'GROUND_TRANSPORT', name: '7. Cab Agent', icon: Car, badgeColor: 'bg-[#d97706]' },
+  { id: 'BUDGET', name: '8. Budget Agent', icon: DollarSign, badgeColor: 'bg-[#059669]' },
+  { id: 'NOTIFICATION', name: '9. Notification Agent', icon: Send, badgeColor: 'bg-[#0284c7]' },
+  { id: 'EXPLAINABILITY', name: '10. Explainability Agent', icon: FileText, badgeColor: 'bg-[#9333ea]' },
 ];
 
 export function AgentOrchestratorVisualizer({ activeTrace = [] }: { activeTrace?: AgentTrace[] }) {
@@ -42,26 +42,26 @@ export function AgentOrchestratorVisualizer({ activeTrace = [] }: { activeTrace?
   };
 
   return (
-    <div className="p-6 rounded-2xl glass-panel border border-indigo-500/20 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-6 brutalist-card-amex space-y-6 font-mono">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <Cpu className="w-5 h-5 text-indigo-400" />
-            LangGraph Multi-Agent Orchestrator
+          <h3 className="text-sm font-black text-white uppercase flex items-center gap-2 tracking-wide">
+            <Cpu className="w-5 h-5 text-[#006FCF]" />
+            LANGGRAPH 10-AGENT AUTONOMOUS PIPELINE
           </h3>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Real-time visual state graph executing the 10-agent autonomous workflow
+          <p className="text-xs text-slate-400 mt-1">
+            State graph executing live disruption classification, risk scoring, Gemini planning, and zero-touch auto-execution
           </p>
         </div>
-        <div className="flex items-center gap-3 text-xs">
-          <div className="flex items-center gap-1.5 text-gray-400">
-            <span className="w-2.5 h-2.5 rounded-full bg-gray-700" /> Idle
+        <div className="flex items-center gap-3 text-xs font-bold uppercase">
+          <div className="flex items-center gap-1.5 text-slate-400">
+            <span className="w-2.5 h-2.5 bg-slate-700 border border-black" /> IDLE
           </div>
-          <div className="flex items-center gap-1.5 text-amber-400">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" /> Running
+          <div className="flex items-center gap-1.5 text-[#C5A059]">
+            <span className="w-2.5 h-2.5 bg-[#C5A059] border border-black animate-ping" /> RUNNING
           </div>
-          <div className="flex items-center gap-1.5 text-emerald-400">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Completed
+          <div className="flex items-center gap-1.5 text-[#00E676]">
+            <span className="w-2.5 h-2.5 bg-[#00E676] border border-black" /> EXECUTED
           </div>
         </div>
       </div>
@@ -80,38 +80,36 @@ export function AgentOrchestratorVisualizer({ activeTrace = [] }: { activeTrace?
               key={agent.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className={`p-3.5 rounded-xl border flex flex-col justify-between transition-all relative overflow-hidden ${
+              transition={{ delay: index * 0.04 }}
+              className={`p-3.5 border-2 flex flex-col justify-between transition-all relative ${
                 isCompleted
-                  ? 'bg-emerald-950/20 border-emerald-500/40 text-white shadow-lg shadow-emerald-500/5'
+                  ? 'bg-[#061912] border-[#00E676] text-white shadow-[3px_3px_0px_0px_#000]'
                   : isStarted
-                  ? 'bg-amber-950/30 border-amber-500/60 text-amber-200 shadow-lg shadow-amber-500/10 animate-pulse'
-                  : 'bg-gray-900/40 border-gray-800/80 text-gray-400'
+                  ? 'bg-[#141009] border-[#C5A059] text-[#C5A059] shadow-[3px_3px_0px_0px_#000] animate-pulse'
+                  : 'bg-[#0d1322] border-slate-800 text-slate-400 shadow-[2px_2px_0px_0px_#000]'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <div
-                  className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${agent.color} flex items-center justify-center text-white shadow-md`}
-                >
+                <div className={`w-7 h-7 ${agent.badgeColor} border border-black flex items-center justify-center text-white font-bold shadow-[1px_1px_0px_0px_#000]`}>
                   <Icon className="w-4 h-4" />
                 </div>
-                <span className="text-[10px] font-mono font-semibold text-gray-500">
+                <span className="text-[10px] font-black text-slate-400 font-mono">
                   #{index + 1}
                 </span>
               </div>
 
               <div>
-                <div className="font-semibold text-xs text-gray-200 leading-snug">
+                <div className="font-black text-xs text-white uppercase leading-snug">
                   {agent.name}
                 </div>
-                <div className="text-[10px] text-gray-400 mt-1 line-clamp-2">
-                  {traceItem?.reasoning || `Agent ${agent.id.toLowerCase()} node`}
+                <div className="text-[10px] text-slate-300 mt-1 line-clamp-2 leading-relaxed">
+                  {traceItem?.reasoning || `Agent ${agent.id.toLowerCase()} ready`}
                 </div>
               </div>
 
               {traceItem?.durationMs !== undefined && (
-                <div className="mt-2 text-[9px] font-mono text-emerald-400 font-semibold border-t border-emerald-500/20 pt-1">
-                  {traceItem.durationMs}ms
+                <div className="mt-2 text-[9px] font-mono text-[#00E676] font-black border-t border-slate-800 pt-1">
+                  LATENCY: {traceItem.durationMs}ms
                 </div>
               )}
             </motion.div>

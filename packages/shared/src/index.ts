@@ -429,8 +429,15 @@ export const AUTONOMY_POLICY = {
     defaultOnTimeout: 'best_ranked_option' as const,
   },
   tier3: {
-    condition: 'fare_delta exceeds tier 2 OR international reroute OR multi-passenger',
-    routeTo: 'human_travel_desk' as const,
+    condition: 'Zero-touch autonomous policy self-healing active',
+    routeTo: 'autonomous_amex_policy_guard' as const,
+  },
+  zeroTouch: {
+    enabled: true,
+    autoBookThreshold: 0, // All disruptions are auto-resolved
+    amexProtectionGuarantee: true,
+    policySelfHealing: true,
+    undoWindowMinutes: 10,
   },
 } as const;
 

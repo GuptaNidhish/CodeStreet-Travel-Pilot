@@ -41,17 +41,17 @@ export function UndoCountdownTimer({ decisionId, deadlineIso, onUndone }: UndoTi
 
   if (undone) {
     return (
-      <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2">
-        <CheckCircle2 className="w-4 h-4 text-amber-400" />
-        Booking successfully undone. Original itinerary restored.
+      <div className="p-3 bg-[#141009] border-2 border-[#C5A059] text-[#C5A059] text-xs font-mono font-bold flex items-center gap-2">
+        <CheckCircle2 className="w-4 h-4 text-[#C5A059]" />
+        BOOKING UNDONE. ORIGINAL ITINERARY RESTORED.
       </div>
     );
   }
 
   if (secondsLeft <= 0) {
     return (
-      <div className="text-[11px] text-gray-500 flex items-center gap-1 font-mono">
-        <AlertCircle className="w-3.5 h-3.5 text-gray-600" /> Undo window expired (Ticketing finalized)
+      <div className="text-[11px] text-slate-500 flex items-center gap-1 font-mono font-bold uppercase">
+        <AlertCircle className="w-3.5 h-3.5 text-slate-600" /> UNDO WINDOW EXPIRED (FINAL TICKETING CONFIRMED)
       </div>
     );
   }
@@ -60,23 +60,23 @@ export function UndoCountdownTimer({ decisionId, deadlineIso, onUndone }: UndoTi
   const secs = secondsLeft % 60;
 
   return (
-    <div className="p-3.5 rounded-xl bg-gradient-to-r from-blue-950/60 to-indigo-950/60 border border-blue-500/30 flex items-center justify-between gap-4">
+    <div className="p-3.5 brutalist-card-amex flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono">
       <div>
-        <div className="text-xs font-bold text-blue-300 flex items-center gap-1.5">
-          <RotateCcw className="w-4 h-4 text-blue-400" />
-          Tier 1 Auto-Booked (Undo Window Active)
+        <div className="text-xs font-black text-white uppercase flex items-center gap-1.5">
+          <RotateCcw className="w-4 h-4 text-[#006FCF]" />
+          100% ZERO-TOUCH AUTO-BOOKED (UNDO WINDOW ACTIVE)
         </div>
-        <div className="text-[11px] text-gray-300 mt-0.5">
-          Hold timeframe before final airline ticketing: <span className="font-mono font-bold text-amber-400">{mins}:{secs < 10 ? '0' : ''}{secs}</span>
+        <div className="text-[11px] text-slate-300 mt-0.5">
+          Executive ticketing hold time: <span className="font-mono font-black text-[#C5A059] text-sm">{mins}:{secs < 10 ? '0' : ''}{secs}</span>
         </div>
       </div>
 
       <button
         disabled={loading}
         onClick={handleUndo}
-        className="px-3.5 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 text-xs font-semibold transition-all disabled:opacity-50 shrink-0"
+        className="px-4 py-1.5 bg-[#FF1744] text-white font-black text-xs uppercase border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-transform disabled:opacity-50 shrink-0"
       >
-        {loading ? 'Undoing...' : 'Undo Rebooking'}
+        {loading ? 'UNDOING...' : 'UNDO AUTO-REBOOKING'}
       </button>
     </div>
   );

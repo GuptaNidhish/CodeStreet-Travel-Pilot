@@ -12,7 +12,8 @@ flightRouter.use(requireAuth);
 // GET /api/flights/status/:flightNumber
 flightRouter.get('/status/:flightNumber', async (req: AuthRequest, res: Response) => {
   try {
-    const status = await getFlightStatus(req.params.flightNumber);
+    const flightNum = Array.isArray(req.params.flightNumber) ? req.params.flightNumber[0] : req.params.flightNumber;
+    const status = await getFlightStatus(flightNum);
     return res.json({ success: true, data: status });
   } catch {
     return res.status(500).json({ success: false, error: 'Failed to get flight status' });

@@ -1,0 +1,338 @@
+// ============================================
+// TravelPilot AI — Prisma Schema
+// Supabase PostgreSQL with connection pooling
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// --- Users & Auth ---
+
+enum UserRole {
+  TRAVELER
+  MANAGER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(TRAVELER)
+  phone     String?
+  avatarUrl String?
+
+  preferences Json @default("{\"seatPreference\":\"NO_PREFERENCE\",\"dietaryPreference\":\"none\",\"preferredAirlines\":[],\"maxBudgetUSD\":5000,\"cabinPreference\":\"ECONOMY\",\"carbonConscious\":false,\"notificationChannels\":[\"IN_APP\"]}")
+
+  trips         Trip[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// --- Trips & Itineraries ---
+
+enum TripStatus {
+  UPCOMING
+  ACTIVE
+  DISRUPTED
+  RESOLVED
+  COMPLETED
+  CANCELLED
+}
+
+model Trip {
+  id          String     @id @default(uuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      TripStatus @default(UPCOMING)
+  startDate   DateTime
+  endDate     DateTime
+  budgetUSD   Float      @default(0)
+  spentUSD    Float      @default(0)
+
+  segments      Segment[]
+  hotelBookings HotelBooking[]
+  cabBookings   CabBooking[]
+  disruptions   DisruptionEvent[]
+  decisions     RebookingDecision[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+  agentLogs     AgentLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("trips")
+}
+
+// --- Flight Segments ---
+
+enum SegmentStatus {
+  SCHEDULED
+  ON_TIME
+  DELAYED
+  CANCELLED
+  DIVERTED
+  REBOOKED
+  COMPLETED
+}
+
+enum CabinClass {
+  ECONOMY
+  PREMIUM_ECONOMY
+  BUSINESS
+  FIRST
+}
+
+model Segment {
+  id               String        @id @default(uuid())
+  tripId           String
+  trip             Trip          @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  flightNumber     String
+  airline          String
+  departureAirport String
+  arrivalAirport   String
+  departureTime    DateTime
+  arrivalTime      DateTime
+  cabin            CabinClass    @default(ECONOMY)
+  fare             Float
+  pnr              String
+  status           SegmentStatus @default(SCHEDULED)
+  connectionRisk   String?
+  nextSegmentId    String?
+  carbonKg         Float         @default(0)
+  order            Int           @default(0)
+
+  disruptions DisruptionEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("segments")
+}
+
+// --- Disruption Events ---
+
+enum DisruptionType {
+  CANCELLATION
+  DELAY
+  DIVERSION
+  MISSED_CONNECTION
+  WEATHER
+}
+
+model DisruptionEvent {
+  id             String         @id @default(uuid())
+  tripId         String
+  trip           Trip           @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  segmentId      String
+  segment        Segment        @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  type           DisruptionType
+  riskScore      Float          @default(0)
+  delayMinutes   Int            @default(0)
+  reason         String
+  weatherData    Json?
+  connectionRisk String?
+
+  candidates RebookingCandidate[]
+  decisions  RebookingDecision[]
+
+  detectedAt DateTime @default(now())
+  resolvedAt DateTime?
+
+  @@map("disruption_events")
+}
+
+// --- Rebooking Candidates ---
+
+model RebookingCandidate {
+  id               String          @id @default(uuid())
+  disruptionId     String
+  disruption       DisruptionEvent @relation(fields: [disruptionId], references: [id], onDelete: Cascade)
+  flightNumber     String
+  airline          String
+  departureAirport String
+  arrivalAirport   String
+  departureTime    DateTime
+  arrivalTime      DateTime
+  cabin            CabinClass      @default(ECONOMY)
+  fare             Float
+  stops            Int             @default(0)
+  score            Float           @default(0)
+  carbonKg         Float           @default(0)
+  allianceMatch    Boolean         @default(false)
+  reasons          Json            @default("[]")
+  rejectionReason  String?
+
+  decisions RebookingDecision[]
+
+  createdAt DateTime @default(now())
+
+  @@map("rebooking_candidates")
+}
+
+// --- Rebooking Decisions ---
+
+enum AutonomyTier {
+  TIER_1_AUTO
+  TIER_2_CONFIRM
+  TIER_3_ESCALATE
+}
+
+enum DecisionStatus {
+  PENDING
+  AUTO_BOOKED
+  AWAITING_APPROVAL
+  APPROVED
+  OVERRIDDEN
+  ESCALATED
+  UNDONE
+  EXPIRED
+}
+
+model RebookingDecision {
+  id                  String              @id @default(uuid())
+  tripId              String
+  trip                Trip                @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  disruptionId        String
+  disruption          DisruptionEvent     @relation(fields: [disruptionId], references: [id], onDelete: Cascade)
+  tier                AutonomyTier
+  status              DecisionStatus      @default(PENDING)
+  selectedCandidateId String?
+  selectedCandidate   RebookingCandidate? @relation(fields: [selectedCandidateId], references: [id])
+  fareDelta           Float               @default(0)
+  reasoning           String              @default("")
+  policyCheckResult   Json                @default("{}")
+  undoDeadline        DateTime?
+  approvalDeadline    DateTime?
+
+  decidedAt  DateTime  @default(now())
+  executedAt DateTime?
+
+  @@map("rebooking_decisions")
+}
+
+// --- Hotel Bookings ---
+
+model HotelBooking {
+  id               String @id @default(uuid())
+  tripId           String
+  trip             Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  hotelName        String
+  location         String
+  checkIn          DateTime
+  checkOut         DateTime
+  pricePerNight    Float
+  totalPrice       Float
+  confirmationCode String @default("")
+  status           String @default("CONFIRMED")
+  modifiedReason   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("hotel_bookings")
+}
+
+// --- Cab Bookings ---
+
+model CabBooking {
+  id              String   @id @default(uuid())
+  tripId          String
+  trip            Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  pickupLocation  String
+  dropoffLocation String
+  scheduledTime   DateTime
+  price           Float
+  status          String   @default("CONFIRMED")
+  provider        String   @default("Mock Cabs")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cab_bookings")
+}
+
+// --- Policy Rules ---
+
+model PolicyRule {
+  id          String @id @default(uuid())
+  name        String @unique
+  description String
+  config      Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("policy_rules")
+}
+
+// --- Notifications ---
+
+model Notification {
+  id        String  @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tripId    String?
+  trip      Trip?   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  message   String
+  channel   String  @default("IN_APP")
+  read      Boolean @default(false)
+  actionUrl String?
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+// --- Audit Log (APPEND-ONLY — never update or delete) ---
+
+model AuditLog {
+  id        String @id @default(uuid())
+  tripId    String
+  trip      Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  agentType String
+  action    String
+  input     Json   @default("{}")
+  output    Json   @default("{}")
+  reasoning String @default("")
+  durationMs Int   @default(0)
+
+  timestamp DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// --- Agent Execution Logs ---
+
+model AgentLog {
+  id           String  @id @default(uuid())
+  tripId       String
+  trip         Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  disruptionId String?
+  agentType    String
+  status       String  @default("STARTED")
+  input        Json    @default("{}")
+  output       Json?
+  error        String?
+  durationMs   Int     @default(0)
+
+  timestamp DateTime @default(now())
+
+  @@map("agent_logs")
+}
